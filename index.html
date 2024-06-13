@@ -1,0 +1,487 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Love</title>
+    <link type="text/css" rel="stylesheet" href="./public/default.css">
+    <script type="text/javascript" src="./public/jquery.min.js"></script>
+    <script type="text/javascript" src="./public/jscex.min.js"></script>
+    <script type="text/javascript" src="./public/jscex-parser.js"></script>
+    <script type="text/javascript" src="./public/jscex-jit.js"></script>
+    <script type="text/javascript" src="./public/jscex-builderbase.min.js"></script>
+    <script type="text/javascript" src="./public/jscex-async.min.js"></script>
+    <script type="text/javascript" src="./public/jscex-async-powerpack.min.js"></script>
+    <script type="text/javascript" src="./public/functions.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./public/love.js" charset="utf-8"></script>
+    <style>
+        /* 样式调整 */
+        #main {
+            background: url('./public/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* #text {
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        } */
+
+        .image-container {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center;    /* Center vertically */
+        }
+
+        #image-container img {
+            display: none;
+            width: 80%;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        #image-caption {
+            display: none;
+            font-size: 18px;
+            color: #333;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="error">亲，您使用的浏览器无法支持即将显示的内容，请换成谷歌(<a href="http://www.google.cn/chrome/intl/zh-CN/landing_chrome.html?hl=zh-CN&brand=CHMI">Chrome</a>)或者火狐(<a href="http://firefox.com.cn/download/">Firefox</a>)浏览器哟~</div>
+        <div id="wrap">
+            <div id="text">
+                <div id="code">
+                    <span class="say">乖乖</span><br>
+                    <span class="say">这是陪你度过的第一个生日，也迎来了我们的重要时刻</span><br>
+                    <span class="say">我们见了父母，得到了肯定</span><br>
+                    <span class="say">从一句你好开始，我们已经经历了春夏秋冬</span><br>
+                    <span class="say">这些日子里的点点滴滴，都值得一辈子去回忆</span><br>
+                </div>
+                <!-- <div id="code2">
+                    <span class="say">我期待这一生与你一起走过，</span>
+                    <span class="say">我期待与你慢慢变老</span><br>
+                    <span class="say">等我们老到哪儿也去不了，</span><br>
+                    <span class="say">还能满载着一生的幸福快乐 ！</span><br>
+                    <span class="say"><span class="space"></span> -- 爱你的，建洋</span>
+
+                </div> -->
+
+            </div>
+            <div id="image-container">
+                <img id="dynamic-image" src="" alt="Dynamic Image">
+                <div id="image-caption"></div>
+            </div>
+            <div id="clock-box">
+                <a href="http://blog.csdn.net/wuxia2001" target="_blank">We</a> Are <a href="http://blog.csdn.net/wuxia2001" target="_blank">Together</a> For
+                <div id="clock"></div>
+            </div>
+            <canvas id="canvas" width="1100" height="680"></canvas>
+        </div>
+        <audio src="特别的人-方大同.mp3" autoplay="autoplay"></audio>
+    </div>
+
+    <script>
+    (function(){
+        document.addEventListener('mousedown', function() {
+            var audio = document.querySelector('audio');
+            audio.loop = true;
+            audio.volume = 0.5;
+            audio.play();
+        });
+
+        var canvas = $('#canvas');
+
+        if (!canvas[0].getContext) {
+            $("#error").show();
+            return false;
+        }
+
+        var width = canvas.width();
+        var height = canvas.height();
+        
+        canvas.attr("width", width);
+        canvas.attr("height", height);
+
+        var opts = {
+            seed: {
+                x: width / 2 - 20,
+                color: "rgb(190, 26, 37)",
+                scale: 2
+            },
+            branch: [
+                [535, 680, 570, 250, 500, 200, 30, 100, [
+                    [540, 500, 455, 417, 340, 400, 13, 100, [
+                        [450, 435, 434, 430, 394, 395, 2, 40]
+                    ]],
+                    [550, 445, 600, 356, 680, 345, 12, 100, [
+                        [578, 400, 648, 409, 661, 426, 3, 80]
+                    ]],
+                    [539, 281, 537, 248, 534, 217, 3, 40],
+                    [546, 397, 413, 247, 328, 244, 9, 80, [
+                        [427, 286, 383, 253, 371, 205, 2, 40],
+                        [498, 345, 435, 315, 395, 330, 4, 60]
+                    ]],
+                    [546, 357, 608, 252, 678, 221, 6, 100, [
+                        [590, 293, 646, 277, 648, 271, 2, 80]
+                    ]]
+                ]] 
+            ],
+            bloom: {
+                num: 700,
+                width: 1080,
+                height: 650,
+            },
+            footer: {
+                width: 1200,
+                height: 5,
+                speed: 10,
+            }
+        }
+
+        var tree = new Tree(canvas[0], width, height, opts);
+        var seed = tree.seed;
+        var foot = tree.footer;
+        var hold = 1;
+
+        canvas.click(function(e) {
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            if (seed.hover(x, y)) {
+                hold = 0; 
+                canvas.unbind("click");
+                canvas.unbind("mousemove");
+                canvas.removeClass('hand');
+            }
+        }).mousemove(function(e){
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            canvas.toggleClass('hand', seed.hover(x, y));
+        });
+
+        var seedAnimate = eval(Jscex.compile("async", function () {
+            seed.draw();
+            while (hold) {
+                $await(Jscex.Async.sleep(10));
+            }
+            while (seed.canScale()) {
+                seed.scale(0.95);
+                $await(Jscex.Async.sleep(10));
+            }
+            while (seed.canMove()) {
+                seed.move(0, 2);
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+        }));
+
+        var growAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.grow();
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canGrow());
+        }));
+
+        var flowAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.flower(2);
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canFlower());
+        }));
+
+        var moveAnimate = eval(Jscex.compile("async", function () {
+            tree.snapshot("p1", 240, 0, 610, 680);
+            while (tree.move("p1", 500, 0)) {
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+            foot.draw();
+            tree.snapshot("p2", 500, 0, 610, 680);
+
+            // 会有闪烁不得意这样做, (＞﹏＜)
+            canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
+            canvas.css("background", "#ffe");
+            $await(Jscex.Async.sleep(300));
+            canvas.css("background", "none");
+        }));
+
+        var jumpAnimate = eval(Jscex.compile("async", function () {
+            var ctx = tree.ctx;
+            while (true) {
+                tree.ctx.clearRect(0, 0, width, height);
+                tree.jump();
+                foot.draw();
+                $await(Jscex.Async.sleep(25));
+            }
+        }));
+
+        // 准备包含图片路径和解说文字的数组
+        var imagesWithCaptions = [
+                // {
+                //     groupTitle: '我们总是会和美好不期而遇',
+                //     images: [
+                {
+                    src: './picture/IMG_2023.PNG',
+                    caption: '略显尴尬的开场，然后我们似乎有了说不完的话'     
+                },
+
+                {
+                    src: './picture/efa4cebb5f23a7e4fce4085024994b5e.JPG',
+                    caption: '但是，2023年5月10号早上五点，这是那天早上的朝阳，在我分享给你的前一秒，你说：建洋哥哥一路平安，便开始了我的穷追不舍，后来你说我直球打得你害怕，现在看来好庆幸我当时的大胆'     
+                },
+
+                {
+                    src: './picture/82d646c97f6805e767a657166263fd54.JPG',
+                    caption: '后来我们不分昼夜的聊天，终于我们在温彻见面了，回来的时候，路上看到了夕阳，从那个时候就我就已经开始开始憧憬和你两人，三餐，四季的生活'     
+                },
+
+                {
+                    src: './picture/905e3f970ee4d2b528e36c91c2185714.JPG',
+                    caption: '从那以后，温彻Riverside way就变成了我挂念的地方，因为有你在那里。后来我们第一次去南安，虽然做了很多糗事儿，现在还在被你嘲笑，但是在Mayflower Park，我开始幻想着我们的 Jack 和 Rose 般的爱情'     
+                },
+
+                {
+                    src: './picture/966826b5702d716243ed660a307f1061.JPG',
+                    caption: '再后来你来到了我的城市，我提前准备了你喜欢的花花'     
+                },
+
+                {
+                    src: './picture/IMG_0789.jpg',
+                    caption: '也准备了好多好多食材，开始憧憬每天和你见面，似乎两人三餐四季的生活正在慢慢的实现'     
+                },
+
+                
+
+                
+                { src: './picture/6c6730a5f3144e85c3ef27565f792473.JPG', caption: '我们开始一起旅游，并在湖区留下我们的第一张合影，虽然只有手手，但也让我兴奋了好久' },
+
+                // { src: './picture/6c6730a5f3144e85c3ef27565f792473.JPG', caption: '我们去了很多很多地方，也有了越来越多的合影' },
+                {src: './picture/5303d341997d1a7f662f3c50d89918d1.JPG', caption: '我们去了很多很多地方，也有了越来越多的合影，我们第一张露脸的合影来自于你的小相机' },
+                { src: './picture/6bb4a4974497c2de8f15cc3f62843626.JPG', caption: '漫步泰晤士河，伦敦眼和我们同框'},
+                { src: './picture/7c2189e60547234b256c86a40855ba71 2.JPG', caption: '我们在格林威治追逐日落'},
+                {src: './picture/45bc02dfa6582b4a88da8875220916f3.JPG', caption: '在峰区，我们第一次爬山，在风中凌乱'},
+                {src: './picture/20307327eb57abead1f395dc3b13f00f.JPG',caption: '在伦敦我们一起看展'},
+                {src: './picture/FullSizeRender 3.JPG',caption: '我们一起看歌剧，开启了我的人生新体验'},
+                {src: './picture/FullSizeRender 4.JPG',caption: '我们在利物浦博物馆'},
+                {src: './picture/FullSizeRender 5.JPG',caption: '我们去了曼城'},
+                {src: './picture/IMG_1538.JPG',caption: '在兰蒂德诺发癫'},
+                {src: './picture/d7fa4f4093e8af055440aa87667ab249.JPG',caption: '在约克肉桂街，我们一起打卡了黄油啤酒'},
+
+                {src: './picture/IMG_0690.JPG',caption: '你说喜欢伦敦，所以我们去了好多次，我们一起坐了伦敦眼'},
+                {src: './picture/IMG_1087.JPG',caption: '我们走过了伦敦千禧桥，和圣保罗教堂偶遇'},
+                {src: './picture/IMG_1626.JPG',caption: '在圣詹姆斯公园摸你的人生鹈鹕'},
+                {src: './picture/IMG_1635.JPG',caption: '在诺丁山赏樱，看紫藤爬满房顶'},
+                {src: './picture/IMG_1019.JPG',caption: '在格林威治看到了我们以后的样子'},
+                {src: './picture/R0000282.JPG',caption: '在博罗市场感受烟火气'},
+                
+
+            
+                { src: './picture/306219f2f90a03e47f88343b7f99dc2d.JPG',caption:'我们总是会和美好不期而遇，在你最喜欢的公园，小松鼠给我们送来了板栗，就埋在了我们的身边' },
+                {src: './picture/IMG_1717.JPG',caption: '这一晚我们追到了日落还有极光，叠满了浪漫加成'},
+                { src: './picture/9eae27cbb9570c612ede091512fd7779.JPG',caption: '这一晚我们追到了日落还有极光，叠满了浪漫加成' },
+                {src: './picture/IMG_1778.JPG',caption: '超级喜欢这张照片，想要就这样抱着你不撒手' },
+                { src: './picture/IMG_1882.JPG',caption: '我们一起看了好多好多彩虹' },
+
+                {
+                    src: './picture/932a9dab00d28fd7ef2d68a9a0ca2d59.JPG',
+                    caption: '我们有了好多第一次的回忆，第一次一起过年，做了一大桌子菜，感觉我们真正有了自己的小家'     
+                },
+                {
+                    src: './picture/IMG_1313.JPG',
+                    caption: '你送我的第一双鞋子，被我焊在了脚上'     
+                },
+                {
+                    src: './picture/IMG_1391.JPG',
+                    caption: '第一次做蛋糕，你的拉瓜小狗，第一眼我就爱上了'     
+                },
+                {
+                    src: './picture/WechatIMG72578.jpg',
+                    caption: '因为下雨，你第一次接我下班，真的是太幸福啦'     
+                },
+                {
+                    src: './picture/IMG_1256.JPG',
+                    caption: '第一次在凌晨五点的大雪中撒欢'     
+                },
+                {
+                    src: './picture/WechatIMG71625.jpg',
+                    caption: '并且拥有了我们的第一个孩子“雪宝”'     
+                },
+
+                {
+                    src: './picture/861420cfa6b48db934f5ac078d19e714 2.JPG',
+                    caption: '我们也参与了彼此的人生重要时刻，作为家属去参加你的毕业典礼，也是这一天，告诉了全世界，我找到了我的挚爱'     
+                },
+                { src: './picture/IMG_1697.JPG', caption: '你为我准备的生日，让我热泪盈眶，当打开门看到投影的时候，满满的氛围感就已经让我心醉了'},
+                { src: './picture/IMG_1650.JPG', caption: '还有看到你为我准备的一桌子菜还有蛋糕，真的超级感动，那个时候已经觉得这是我长这么大过的最有仪式感的生日了' },
+                {src: './picture/IMG_1694.JPG', caption: '但是当我看到你精心准备的相册，一页一页的翻过，回忆就像电影胶片一样在眼前萦绕，那一刻真的没忍住，眼眶瞬间就红了。看着我们一起走过的路，有你在身边，感觉自己是世界上最幸福的人了。谢谢你宝贝，有你在真好'}, 
+               
+                {src: './picture/06b99938f45b62f6e60ce2666e05b78a.JPG', caption: '现在我们开启了新的篇章，看着其乐融融的景象，我对未来的生活充满了希冀'},
+                
+                {src: './picture/975194ad4609f3fad45748247ab13f03.JPG', caption: '宝贝，未来的生活，就想这样牵着你的手与你走过一生，期待和你一起变老，等我们老到哪儿也去不了，还能满载着一生的幸福快乐 ！'},
+                
+
+                
+                
+            ];
+
+        // var textAnimate = eval(Jscex.compile("async", function () {
+        //     var together = new Date();
+        //     together.setFullYear(2023, 7, 26);
+        //     together.setHours(20);
+        //     together.setMinutes(20);
+        //     together.setSeconds(0);
+        //     together.setMilliseconds(0);
+
+        //     // Show the text
+        //     $("#code").fadeIn(1000); // Adjust the duration as needed
+        //     $("#clock-box").fadeIn(500);
+        //     timeElapse(together);
+
+        //     var container = $("#code");
+            
+
+        //     // Iterate over each group
+        //     for (var i = 0; i < groupsWithCaptions.length; i++) {
+        //         var group = groupsWithCaptions[i];
+
+        //         // Show the group title
+        //         var groupTitleElement = $('<div style="font-size: 24px; color: #333; text-align: center; margin: 20px 0;">' + group.groupTitle + '</div>');
+        //         container.append(groupTitleElement);
+        //         groupTitleElement.fadeIn(1000); // Adjust the duration as needed
+
+        //         await(Jscex.Async.sleep(3000)); // Wait for 3 seconds before showing images
+
+        //         // Iterate over each image in the group
+        //         for (var j = 0; j < group.images.length; j++) {
+        //             var image = group.images[j];
+        //             var img = $('<img src="' + image.src + '" alt="' + image.caption + '" style="max-width: 50%; max-height: 50%; display: none; margin: 10px auto;">');
+        //             container.append(img);
+        //             var caption = $('<div style="font-size: 12px; color: #333; text-align: center; display: none;">' + image.caption + '</div>');
+        //             container.append(caption);
+
+        //             // Show the image and caption
+        //             img.fadeIn(1000); // Fade in the image gradually
+        //             caption.delay(1000).fadeIn(1000); // Fade in the caption gradually
+
+        //             // Wait for 5 seconds before moving to the next image
+        //             await(Jscex.Async.sleep(5000));
+
+        //             // Fade out the image and caption
+        //             img.fadeOut(1000); // Fade out the image gradually
+        //             caption.fadeOut(1000); // Fade out the caption gradually
+
+        //             // Wait for the fade-out to complete before showing the next image
+        //             await(Jscex.Async.sleep(1000));
+        //         }
+
+        //         // Wait for a short duration before moving to the next group
+        //         await(Jscex.Async.sleep(2000));
+        //     }
+
+        //     // Fade out the text container
+        //     $("#code").fadeOut(1000); // Adjust the duration as needed
+        // }));
+
+        var textAnimate = eval(Jscex.compile("async", function () {
+            var together = new Date();
+            together.setFullYear(2023, 7, 26);
+            together.setHours(20);
+            together.setMinutes(20);
+            together.setSeconds(0);
+            together.setMilliseconds(0);
+
+            // Show the text
+            $("#code").fadeIn(1000); // Adjust the duration as needed
+            $("#clock-box").fadeIn(500);
+            timeElapse(together);
+
+            // Append images to the text container
+            var container = $("#code");
+
+            for (var i = 0; i < imagesWithCaptions.length; i++) {
+                var image = imagesWithCaptions[i];
+                var img = $('<img src="' + image.src + '" alt="' + image.caption + '" style="max-width: 60%; max-height: 60%; display: none; margin: 10px auto;">');
+                container.append(img);
+                // var img = $('<img src="' + image.src + '" alt="' + image.caption + '" style="width: 200px; height: 150px; display: none; margin: 10px auto;">');
+                // container.append(img);
+
+                var caption = $('<div style="font-size: 16px; color: #333; text-align: center; display: none;">' + image.caption + '</div>');
+                container.append(caption);
+            }
+
+            // Function to show next image with caption
+            function showNextImage(index) {
+                if (index < imagesWithCaptions.length) {
+                    var img = container.find('img').eq(index);
+                    var caption = container.find('div').eq(index);
+                    img.fadeIn(1000); // Adjust the duration as needed
+                    caption.delay(1000).fadeIn(1000); // Adjust the duration as needed
+                    if (index < imagesWithCaptions.length - 1) { // Check if it's not the last image
+                        setTimeout(function() {
+                            img.fadeOut(1000); // Adjust the duration as needed
+                            caption.delay(0).fadeOut(1000, function() {
+                                showNextImage(index + 1);
+                            }); // Adjust the duration as needed
+                        }, 6000); // 5 seconds delay before fading out
+                    }
+                }
+            }
+
+            // Start displaying images
+            showNextImage(0);
+
+            // Wait for a certain duration before fading out the text
+            await(Jscex.Async.sleep(5000)); // Adjust the duration as needed
+  
+            // Fade out the text gradually
+            $("#code").fadeOut(1000); // Adjust the duration as needed
+            $("#code2").fadeIn(1000); 
+
+        }));
+
+        function showImagesWithCaptions(images) {
+            var index = 0;
+            var img = $('#dynamic-image');
+            var caption = $('#image-caption');
+
+            function showNext() {
+                if (index < images.length) {
+                    img.attr('src', images[index].src);
+                    caption.text(images[index].caption);
+                    img.fadeIn(1000); // Fade in the image gradually
+                    caption.fadeIn(1000); // Fade in the caption gradually
+
+                    setTimeout(function () {
+                        img.fadeOut(1000); // Fade out the image gradually
+                        caption.fadeOut(1000); // Fade out the caption gradually
+                        index++;
+                        showNext();
+                    }, 5000); // 5 seconds delay before showing the next image
+                }
+            }
+
+            showNext();
+        }
+
+        var runAsync = eval(Jscex.compile("async", function () {
+            $await(seedAnimate());
+            $await(growAnimate());
+            $await(flowAnimate());
+            $await(moveAnimate());
+            
+
+            textAnimate().start();
+            
+
+            $await(jumpAnimate());
+            
+        }));
+
+        runAsync().start();
+    })();
+    </script>
+</body>
+</html>
