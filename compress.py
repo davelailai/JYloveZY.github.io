@@ -17,6 +17,6 @@ def compress_images_in_folder(folder_path, output_folder, quality=85):
             print(f'Compressed {filename}')
 
 # Example usage:
-input_folder = './picture'
-output_folder = './compressed_images'
-compress_images_in_folder(input_folder, output_folder, quality=60)
+input_folder = './original_image'
+output_folder = './picture'
+compress_images_in_folder(input_folder, output_folder, quality=40)
