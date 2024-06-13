@@ -5,5 +5,4 @@ output_folder="./compressed_images"
 
 mkdir -p "$output_folder"
 
-find "$input_folder" -type f \( -iname \*.jpg -o -iname \*.jpeg -o -iname \*.png \) -exec mogrify -path "$output_folder" -resize 100% -quality 70% {} \;
-
+find "$input_folder" -type f \( -iname \*.JPG -o -iname \*.JPEG -o -iname \*.HEIC -iname \*.jpg \) -exec mogrify -path "$output_folder" -resize 100% -quality 70% {} \;
